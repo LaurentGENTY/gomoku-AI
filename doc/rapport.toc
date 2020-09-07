@@ -1,0 +1,25 @@
+\babel@toc {french}{}
+\contentsline {section}{\numberline {1}Server}{3}
+\contentsline {subsection}{\numberline {1.1}Impl\IeC {\'e}mentation de types abstraits de donn\IeC {\'e}es relatifs au serveur}{3}
+\contentsline {subsection}{\numberline {1.2}Initialisation et d\IeC {\'e}roulement du jeu}{4}
+\contentsline {section}{\numberline {2}BitBoard}{5}
+\contentsline {subsection}{\numberline {2.1}Plateau de jeu}{5}
+\contentsline {subsection}{\numberline {2.2}Fonctions bas\IeC {\'e}es sur le bitboard n\IeC {\'e}cessaire \IeC {\`a} l'impl\IeC {\'e}mentation du jeu}{6}
+\contentsline {section}{\numberline {3}Strat\IeC {\'e}gies}{9}
+\contentsline {subsection}{\numberline {3.1}Joueur Minimax}{9}
+\contentsline {subsubsection}{\numberline {3.1.1}Principe du Minimax}{9}
+\contentsline {subsubsection}{\numberline {3.1.2}Heuristique}{10}
+\contentsline {subsubsection}{\numberline {3.1.3}Choix des Coups}{11}
+\contentsline {subsubsection}{\numberline {3.1.4}\IeC {\'E}valuation du Plateau}{11}
+\contentsline {subsubsection}{\numberline {3.1.5}Fonctionnement Negamax}{12}
+\contentsline {subsubsection}{\numberline {3.1.6}\IeC {\'E}lagage Alpha - B\IeC {\^e}ta}{12}
+\contentsline {subsubsection}{\numberline {3.1.7}Multithreading}{13}
+\contentsline {subsection}{\numberline {3.2}M\IeC {\'e}thode de Monte Carlo}{13}
+\contentsline {subsubsection}{\numberline {3.2.1}Principe G\IeC {\'e}n\IeC {\'e}ral}{13}
+\contentsline {subsubsection}{\numberline {3.2.2}Algorithme}{14}
+\contentsline {section}{\numberline {4}\IeC {\'E}valuation des Strat\IeC {\'e}gies}{14}
+\contentsline {subsection}{\numberline {4.1}Performance des Joueurs Minimax}{14}
+\contentsline {subsection}{\numberline {4.2}Performance du Joueur Monte Carlo}{15}
+\contentsline {subsection}{\numberline {4.3}\IeC {\'E}valuation de l'Heuristique}{15}
+\contentsline {section}{\numberline {5}\IeC {\'E}valuation des Ouvertures}{15}
+\contentsline {section}{\numberline {6}Conclusion}{16}
