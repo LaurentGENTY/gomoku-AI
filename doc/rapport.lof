@@ -1,0 +1,20 @@
+\babel@toc {french}{}
+\contentsline {figure}{\numberline {1}{\ignorespaces Repr\IeC {\'e}sentation du plateau sous la forme d'un tableau}}{5}
+\contentsline {figure}{\numberline {2}{\ignorespaces Repr\IeC {\'e}sentation d'un entier de $128$ bits}}{5}
+\contentsline {figure}{\numberline {3}{\ignorespaces Passage d'un tableau d'entier en bitboard}}{6}
+\contentsline {figure}{\numberline {4}{\ignorespaces D\IeC {\'e}termination du bit \IeC {\`a} une position}}{6}
+\contentsline {figure}{\numberline {5}{\ignorespaces Initialisation du bitboard}}{6}
+\contentsline {figure}{\numberline {6}{\ignorespaces Test pour savoir si le plateau est rempli compl\IeC {\`e}tement}}{7}
+\contentsline {figure}{\numberline {7}{\ignorespaces Ajout d'un coup aux coups d'un joueur}}{7}
+\contentsline {figure}{\numberline {8}{\ignorespaces D\IeC {\'e}termination de toutes les lignes contenant le coup}}{7}
+\contentsline {figure}{\numberline {9}{\ignorespaces Diff\IeC {\'e}rentes positions de d\IeC {\'e}parts de ligne de 5 contenant la case rouge}}{8}
+\contentsline {figure}{\numberline {10}{\ignorespaces Cr\IeC {\'e}ation d'un masque}}{8}
+\contentsline {figure}{\numberline {11}{\ignorespaces Tableau des d\IeC {\'e}calages suivant les directions pour un plateau de taille $n\times n$}}{8}
+\contentsline {figure}{\numberline {12}{\ignorespaces Exemple d'arbre de recherche}}{9}
+\contentsline {figure}{\numberline {13}{\ignorespaces Tableau des valeurs de lignes / croisement}}{10}
+\contentsline {figure}{\numberline {14}{\ignorespaces Exemple de d\IeC {\'e}but de partie et la matrice potentiel associ\IeC {\'e}e au joueur noir}}{11}
+\contentsline {figure}{\numberline {15}{\ignorespaces Arbre de la figure \ref {arbre1} \IeC {\'e}lagu\IeC {\'e}}}{12}
+\contentsline {figure}{\numberline {16}{\ignorespaces Temps sur les parties pour des joueurs multithread\IeC {\'e}s (4.4 et 4.3)}}{13}
+\contentsline {figure}{\numberline {17}{\ignorespaces Performance des Joueurs Minimax, arrondi aux milliers}}{15}
+\contentsline {figure}{\numberline {18}{\ignorespaces Pourcentage de parties gagn\IeC {\'e}es pour les Noirs et les Blancs en fonction de la valeur pr\IeC {\'e}dite de l'avantage des noirs}}{16}
+\contentsline {figure}{\numberline {19}{\ignorespaces Tests d'heuristique sur des parties plus "plausible"}}{16}

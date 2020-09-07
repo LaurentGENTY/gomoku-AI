@@ -1,0 +1,87 @@
+\relax 
+\catcode `:\active 
+\catcode `;\active 
+\catcode `!\active 
+\catcode `?\active 
+\babel@aux{french}{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Server}{3}}
+\newlabel{sct:server}{{1}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Impl\IeC {\'e}mentation de types abstraits de donn\IeC {\'e}es relatifs au serveur}{3}}
+\newlabel{subsct:tad_server}{{1.1}{3}}
+\newlabel{lst:struct_moves}{{1.1}{3}}
+\newlabel{lst:struct_player_t}{{1.1}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Initialisation et d\IeC {\'e}roulement du jeu}{4}}
+\newlabel{subsct:init_game}{{1.2}{4}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}BitBoard}{5}}
+\newlabel{sct:bitboard}{{2}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Plateau de jeu}{5}}
+\newlabel{subsct:plateau}{{2.1}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Repr\IeC {\'e}sentation du plateau sous la forme d'un tableau}}{5}}
+\newlabel{fig:Board_ligne}{{1}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Repr\IeC {\'e}sentation d'un entier de $128$ bits}}{5}}
+\newlabel{fig:Int_128}{{2}{5}}
+\newlabel{lst:struct_board}{{2.1}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Passage d'un tableau d'entier en bitboard}}{6}}
+\newlabel{fig:Tabtobitboard}{{3}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Fonctions bas\IeC {\'e}es sur le bitboard n\IeC {\'e}cessaire \IeC {\`a} l'impl\IeC {\'e}mentation du jeu}{6}}
+\newlabel{subsct:fct_bitboard}{{2.2}{6}}
+\newlabel{eq:position}{{1}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces D\IeC {\'e}termination du bit \IeC {\`a} une position}}{6}}
+\newlabel{fig:selectbit}{{4}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Initialisation du bitboard}}{6}}
+\newlabel{fig:boardinit}{{5}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Test pour savoir si le plateau est rempli compl\IeC {\`e}tement}}{7}}
+\newlabel{fig:boardfull}{{6}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Ajout d'un coup aux coups d'un joueur}}{7}}
+\newlabel{fig:addmove}{{7}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces D\IeC {\'e}termination de toutes les lignes contenant le coup}}{7}}
+\newlabel{fig:checkmove}{{8}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Diff\IeC {\'e}rentes positions de d\IeC {\'e}parts de ligne de 5 contenant la case rouge}}{8}}
+\newlabel{fig:horizontal}{{9}{8}}
+\newlabel{pos_init}{{2}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Cr\IeC {\'e}ation d'un masque}}{8}}
+\newlabel{fig:mask}{{10}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces  Tableau des d\IeC {\'e}calages suivant les directions pour un plateau de taille $n\times n$}}{8}}
+\newlabel{tab1}{{11}{8}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Strat\IeC {\'e}gies}{9}}
+\newlabel{sct:strategies}{{3}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Joueur Minimax}{9}}
+\newlabel{subsct:minimax}{{3.1}{9}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}Principe du Minimax}{9}}
+\newlabel{subsct:principe_minimax}{{3.1.1}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Exemple d'arbre de recherche}}{9}}
+\newlabel{arbre1}{{12}{9}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Heuristique}{10}}
+\newlabel{heur}{{3.1.2}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces  Tableau des valeurs de lignes / croisement}}{10}}
+\newlabel{lignes}{{13}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces  Exemple de d\IeC {\'e}but de partie et la matrice potentiel associ\IeC {\'e}e au joueur noir}}{11}}
+\newlabel{fig1}{{14}{11}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.3}Choix des Coups}{11}}
+\newlabel{coups}{{3.1.3}{11}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.4}\IeC {\'E}valuation du Plateau}{11}}
+\newlabel{evalplateau}{{3.1.4}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Arbre de la figure \ref  {arbre1} \IeC {\'e}lagu\IeC {\'e}}}{12}}
+\newlabel{arbre2}{{15}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.5}Fonctionnement Negamax}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.6}\IeC {\'E}lagage Alpha - B\IeC {\^e}ta}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.7}Multithreading}{13}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Temps sur les parties pour des joueurs multithread\IeC {\'e}s (4.4 et 4.3)}}{13}}
+\newlabel{tab2}{{16}{13}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}M\IeC {\'e}thode de Monte Carlo}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Principe G\IeC {\'e}n\IeC {\'e}ral}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Algorithme}{14}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}\IeC {\'E}valuation des Strat\IeC {\'e}gies}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Performance des Joueurs Minimax}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Performance des Joueurs Minimax, arrondi aux milliers}}{15}}
+\newlabel{tab3}{{17}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Performance du Joueur Monte Carlo}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}\IeC {\'E}valuation de l'Heuristique}{15}}
+\newlabel{evalheur}{{4.3}{15}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}\IeC {\'E}valuation des Ouvertures}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Pourcentage de parties gagn\IeC {\'e}es pour les Noirs et les Blancs en fonction de la valeur pr\IeC {\'e}dite de l'avantage des noirs}}{16}}
+\newlabel{fig:stats1}{{18}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces Tests d'heuristique sur des parties plus "plausible"}}{16}}
+\newlabel{tab4}{{19}{16}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{16}}
+\newlabel{sct:ccl}{{6}{16}}
