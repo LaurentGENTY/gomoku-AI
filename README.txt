@@ -55,3 +55,8 @@ make clean : clean the repository, make install and documentation
 Acknowledgments :
 Special thanks to F. Herbreteau
 
+AI algorithms :
+----------
+
+Mainly made by Julien Miens (https://github.com/Arkhean)
+
