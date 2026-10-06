@@ -386,7 +386,7 @@ int main(int argc,char* argv[]){
   TEST("initialization",test_board__initialize(act),1);
   TEST("board__is_full",test_board__is_full(act),1);
   TEST("board__is_valid_move",test_board__is_valid_move(act),1);
-  //TEST("board__won",test_board__won(act),1);
+  TEST("board__won",test_board__won(act),1);
   TEST("board__explore_line",test_explore__line(act),1);
   END_TEST("*",1);
   // printf("Bravo !\nTu as mis %f secondes a trouver le nombre.\n", (double) temps/CLOCKS_PER_SEC);

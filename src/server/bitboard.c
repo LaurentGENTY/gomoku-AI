@@ -90,8 +90,36 @@ int board__is_full(const struct board* b){
   return (*b->b_w | *b->b_b) == ~(__uint128_t)0;
 }
 
+/* Number of consecutive stones of `color` after (row, col) in direction (dr, dc) */
+static int run_length(const struct board* b, int row, int col, int dr, int dc, int color){
+  int n = 0;
+  row += dr;
+  col += dc;
+  while (in_board(b, row, col) && board__get_color(b, row, col) == color){
+    n++;
+    row += dr;
+    col += dc;
+  }
+  return n;
+}
+
 int board__won(const struct board* b, struct move_t m){
-  (void)b; (void)m;
+  if (m.row >= b->size || m.col >= b->size){
+    return 0;
+  }
+  int row = (int)m.row;
+  int col = (int)m.col;
+  int color = board__get_color(b, row, col);
+  if (color == -1){
+    return 0;
+  }
+  for (int d = 0; d < 4; d++){
+    int n = 1 + run_length(b, row, col, DR[d], DC[d], color)
+              + run_length(b, row, col, -DR[d], -DC[d], color);
+    if (n >= 5){
+      return 1;
+    }
+  }
   return 0;
 }
 
