@@ -12,7 +12,7 @@ HDRS     := $(wildcard $(SRV)/*.h $(PLY)/*.h)
 BITBOARD := $(SRV)/bitboard.c
 COMMON   := $(PLY)/matrix.c $(PLY)/list.c
 
-TESTS := test_bitboard
+TESTS := test_bitboard test_player
 
 .PHONY: all test clean doc
 
@@ -22,6 +22,9 @@ $(BUILD):
 	mkdir -p $@
 
 $(BUILD)/test_bitboard: $(TST)/test_bitboard.c $(BITBOARD) $(HDRS) | $(BUILD)
+	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDLIBS)
+
+$(BUILD)/test_player: $(TST)/test_player.c $(PLY)/heuristic2.c $(COMMON) $(BITBOARD) $(HDRS) | $(BUILD)
 	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDLIBS)
 
 test: $(addprefix $(BUILD)/,$(TESTS))

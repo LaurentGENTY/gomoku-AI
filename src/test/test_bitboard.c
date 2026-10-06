@@ -183,198 +183,67 @@ int test_board__won(int act){
    return (res==tot);
 }
 
+/* Pattern indices of board__explore_line, see board.h */
+enum { FIVE = 0, FOUR_OPEN, FOUR_HALF, FOUR_SPACED, THREE_OPEN, THREE_HALF,
+       TWO_OPEN, TWO_HALF, OTHERS, NOTHING = -1 };
+
+/* Plays `stones`, explores (row, col, dir) for BLACK and checks that exactly the
+   `expected` pattern was incremented (or nothing at all for NOTHING). */
+static int explores_to(const struct col_move_t* stones, int n,
+                       int row, int col, int dir, int expected){
+  struct board* board = board__initialize(SIZE);
+  for (int i = 0; i < n; i++){
+    board__add_move(board, stones[i].m, stones[i].c);
+  }
+  int pattern[9] = {0};
+  board__explore_line(board, row, col, dir, BLACK, pattern);
+  board__free(board);
+  int total = 0;
+  for (int i = 0; i < 9; i++){
+    total += pattern[i];
+  }
+  if (expected == NOTHING){
+    return total == 0;
+  }
+  return total == 1 && pattern[expected] == 1;
+}
+
 int test_explore__line(int act){
   INIT_TEST("-",act);
-  struct board* board = board__initialize(SIZE);
-  struct move_t move = {0,0};
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,BLACK);
-  move.row=0;move.col=1;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,BLACK);
-  int pattern[8] = {0,0,0,0,0,0,0,0};
-  board__explore_line(board,0,2,2,BLACK,pattern);
-  int test[8] = {0,0,0,0,1,0,0,0};
-  TEST("1",
-       (pattern!=test),act);
-  board__explore_line(board,0,2,0,BLACK,pattern);
-  test[7]+=1;
-  TEST("2",
-       (pattern!=test),act);
-  move.row=0;move.col=3;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,BLACK);
-  board__explore_line(board,0,2,2,BLACK,pattern);
-  test[2]+=1;
-  TEST("3",
-       (pattern!=test),act);
-  move.row=0;move.col=4;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,WHITE);
-  board__explore_line(board,0,2,2,BLACK,pattern);
-  test[7]+=1;
-  TEST("4",
-       (pattern!=test),act);
-  move.row=4;move.col=2;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,WHITE);
-  board__explore_line(board,0,2,0,BLACK,pattern);
-  test[7]+=1;
-  TEST("5",
-       (pattern!=test),act);
-  move.row=1;move.col=1;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,BLACK);
-  board__explore_line(board,2,2,3,BLACK,pattern);
-  test[4]+=1;
-  TEST("6",
-       (pattern!=test),act);
-  move.row=3;move.col=3;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,BLACK);
-  board__explore_line(board,2,2,3,BLACK,pattern);
-  test[2]+=1;
-  TEST("7",
-       (pattern!=test),act);
-  move.row=4;move.col=4;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,BLACK);
-  board__explore_line(board,2,2,3,BLACK,pattern);
-  test[0]+=1;
-  TEST("8",
-       (pattern!=test),act);
-  move.row=5;move.col=5;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,WHITE);
-  board__explore_line(board,2,2,3,BLACK,pattern);
-  test[0]+=1;
-  TEST("9",
-       (pattern!=test),act);
-  move.row=8;move.col=9;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,WHITE);
-  board__explore_line(board,9,8,1,WHITE,pattern);
-  test[7]+=1;
-  TEST("10",
-       (pattern!=test),act);
-  move.row=6;move.col=4;
-  (assert(board__is_valid_move(board,move)));
-  board__add_move(board,move,WHITE);
-  board__explore_line(board,5,3,3,WHITE,pattern);
-  test[3]+=1;
-  TEST("11",
-       (pattern!=test),act);
-  board__free(board);
+  const struct col_move_t open_two[] = {{{5,4},BLACK}};
+  const struct col_move_t edge_two[] = {{{0,1},BLACK}};
+  const struct col_move_t open_three[] = {{{5,3},BLACK},{{5,4},BLACK}};
+  const struct col_move_t half_three[] = {{{5,3},BLACK},{{5,4},BLACK},{{5,2},WHITE}};
+  const struct col_move_t open_four[] = {{{5,2},BLACK},{{5,3},BLACK},{{5,4},BLACK}};
+  const struct col_move_t half_four[] = {{{5,2},BLACK},{{5,3},BLACK},{{5,4},BLACK},{{5,1},WHITE}};
+  const struct col_move_t five[] = {{{5,1},BLACK},{{5,2},BLACK},{{5,3},BLACK},{{5,4},BLACK}};
+  const struct col_move_t spaced_four[] = {{{5,1},BLACK},{{5,2},BLACK},{{5,4},BLACK}};
+  const struct col_move_t blocked[] = {{{0,4},WHITE}};
+  const struct col_move_t vertical[] = {{{4,5},BLACK},{{3,5},BLACK}};
+  const struct col_move_t diagonal[] = {{{3,3},BLACK},{{4,4},BLACK}};
+  const struct col_move_t anti[] = {{{4,6},BLACK}};
+  const struct col_move_t anti_half[] = {{{4,6},BLACK},{{3,7},WHITE}};
+  const struct col_move_t occupied[] = {{{5,5},BLACK}};
+  const struct col_move_t opponent[] = {{{5,4},WHITE}};
 
-  /* New tests*/
-
-  board = board__initialize(SIZE-1);
-  struct move_t moves[] = {{3,4},{3,5}};
-  for(int i = 0; i < 2; i++){
-    board__add_move(board, moves[i], i%2);
-  }
-  board__explore_line(board,4,3,1,BLACK,pattern);
-  test[5]+=1;
-  TEST("12",
-       (pattern!=test),act);
-  board__explore_line(board,3,3,2,BLACK,pattern);
-  test[5]+=1;
-  TEST("13",
-       (pattern!=test),act);
-  struct move_t moves2[] = {{2,4},{1,4},{2,5}};
-  for(int i = 0; i < 3; i++){
-    board__add_move(board, moves2[i], i%2);
-  }
-  board__explore_line(board,4,3,1,BLACK,pattern);
-  test[5]+=1;
-  TEST("14",
-       (pattern!=test),act);
-  board__explore_line(board,4,4,0,BLACK,pattern);
-  test[5]+=1;
-  TEST("15",
-       (pattern!=test),act);
-  struct move_t moves3[] = {{5,2},{2,2},{2,3}};
-  for(int i = 0; i < 3; i++){
-    board__add_move(board, moves3[i], i%2);
-  }
-  board__explore_line(board,4,3,1,BLACK,pattern);
-  test[5]+=1;
-  TEST("16",
-       (pattern!=test),act);
-  board__explore_line(board,2,6,2,BLACK,pattern);
-  test[5]+=1;
-  TEST("17",
-       (pattern!=test),act);
-  board__explore_line(board,7,1,2,BLACK,pattern);
-  test[5]+=1;
-  TEST("18",
-       (pattern!=test),act);
-  board__free(board);
-  board = board__initialize(8);
-  struct move_t moves4 = {3,3};
-  board__add_move(board, moves4, BLACK);
-  board__explore_line(board,7,3,3,BLACK,pattern);
-  test[5]+=1;
-  TEST("19",
-       (pattern!=test),act);
-  board__free(board);
-  board = board__initialize(8);
-  struct move_t moves5[] = {{1,3},{2,3},{3,3},{4,3}};
-  for(int i =0;i<4;i++){
-    board__add_move(board, moves5[i], BLACK);
-  }
-  struct move_t moves6 = {5,6};
-  board__add_move(board, moves6, WHITE);
-  board__explore_line(board,0,3,0,BLACK,pattern);
-  test[5]+=1;
-  TEST("20",
-       (pattern!=test),act);
-  board__free(board);
-  board = board__initialize(8);
-  struct move_t moves7[] = {{1,2},{1,4},{2,1},{2,4},{2,6},{3,1},{3,3},{3,4},{4,0},{4,5},{5,2},{5,6},{6,2},{6,5}};
-  for(int i =0;i<14;i++){
-    board__add_move(board, moves7[i], BLACK);
-  }
-  struct move_t moves8[] = {{2,2},{2,3},{3,2},{3,5},{3,6},{4,1},{4,2},{4,3},{4,4},{4,6},{5,0},{5,3},{5,4},{5,7}};
-  for(int i =0;i<14;i++){
-    board__add_move(board, moves8[i], WHITE);
-  }
-  int new_pattern[8] = {0,0,0,0,0,0,0,0};
-  int new_test[8] = {0,0,0,0,0,0,0,0};
-  //board__explore_line(board,5,7,0,WHITE,new_pattern);
-  board__explore_line(board,5,7,1,WHITE,new_pattern);
-  //board__explore_line(board,5,7,2,WHITE,new_pattern);
-  //board__explore_line(board,5,7,3,WHITE,new_pattern);
-  TEST("21",
-       (new_pattern!=new_test),act);
-  struct move_t move9 = {3,3};
-  board__add_move(board, move9, BLACK);
-  /*for(int m = 0;m<8;m++)
-    printf("%d ",new_pattern[m]);
-  printf("\n"); */
-  //board__explore_line(board,7,3,0,BLACK,new_pattern);
-  board__explore_line(board,7,3,1,BLACK,new_pattern);
-  //board__explore_line(board,7,3,2,BLACK,new_pattern);
-  //board__explore_line(board,7,3,3,BLACK,new_pattern);
-  /*for(int m = 0;m<8;m++)
-    printf("%d ",new_pattern[m]);
-    printf("\n");*/
-  struct move_t moves10[] = {{1,2},{2,2},{1,4},{2,3},{2,1},{3,2},{2,4},{3,5},{2,6},{3,6},
-			   {3,1},{4,1},{3,3},{4,2},{3,4},{4,3},{4,0},{4,4},{4,5},{4,6},
-			   {5,2},{5,0},{5,6},{5,3},{6,2},{5,4},{6,5}};
-  for(int i = 0; i < 27; i++){
-    board__add_move(board, moves10[i], i%2);
-  }
-  //board__explore_line(board,5,7,0,WHITE,new_pattern);
-  board__explore_line(board,5,7,1,WHITE,new_pattern);
-  //board__explore_line(board,5,7,2,WHITE,new_pattern);
-  // board__explore_line(board,5,7,3,WHITE,new_pattern);
-  /*for(int m = 0;m<8;m++)
-    printf("%d ",new_pattern[m]);
-    printf("\n");*/
+  TEST("single stone", explores_to(NULL, 0, 5, 5, 0, OTHERS), act);
+  TEST("open two", explores_to(open_two, 1, 5, 5, 0, TWO_OPEN), act);
+  TEST("two against the edge is half open", explores_to(edge_two, 1, 0, 0, 0, TWO_HALF), act);
+  TEST("open three", explores_to(open_three, 2, 5, 5, 0, THREE_OPEN), act);
+  TEST("half three", explores_to(half_three, 3, 5, 5, 0, THREE_HALF), act);
+  TEST("open four", explores_to(open_four, 3, 5, 5, 0, FOUR_OPEN), act);
+  TEST("half four", explores_to(half_four, 4, 5, 5, 0, FOUR_HALF), act);
+  TEST("five", explores_to(five, 4, 5, 5, 0, FIVE), act);
+  TEST("spaced four", explores_to(spaced_four, 3, 5, 5, 0, FOUR_SPACED), act);
+  TEST("line too short to reach five", explores_to(blocked, 1, 0, 0, 0, NOTHING), act);
+  TEST("vertical three", explores_to(vertical, 2, 5, 5, 1, THREE_OPEN), act);
+  TEST("diagonal three", explores_to(diagonal, 2, 5, 5, 2, THREE_OPEN), act);
+  TEST("anti-diagonal two", explores_to(anti, 1, 5, 5, 3, TWO_OPEN), act);
+  TEST("anti-diagonal half two", explores_to(anti_half, 2, 5, 5, 3, TWO_HALF), act);
+  TEST("occupied cell", explores_to(occupied, 1, 5, 5, 0, NOTHING), act);
+  TEST("opponent stones are not counted", explores_to(opponent, 1, 5, 5, 0, OTHERS), act);
+  TEST("invalid direction", explores_to(NULL, 0, 5, 5, 4, NOTHING), act);
   END_TEST("-",act);
-  assert(res!=0);
-  board__free(board);
   return (res==tot);
 }
 

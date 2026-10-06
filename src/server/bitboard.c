@@ -123,6 +123,61 @@ int board__won(const struct board* b, struct move_t m){
   return 0;
 }
 
+enum { P_FIVE = 0, P_FOUR_OPEN, P_FOUR_HALF, P_FOUR_SPACED, P_THREE_OPEN,
+       P_THREE_HALF, P_TWO_OPEN, P_TWO_HALF, P_OTHERS };
+enum { CELL_OWN, CELL_EMPTY, CELL_BLOCKED };
+
+/* Cells looked at on each side of the explored cell: a five never spans more */
+#define REACH 4
+#define WINDOW (2 * REACH + 1)
+
 void board__explore_line(const struct board* b, int row, int col, int dir, int color, int* pattern){
-  (void)b; (void)row; (void)col; (void)dir; (void)color; (void)pattern;
+  if (dir < 0 || dir > 3 || !in_board(b, row, col) || board__get_color(b, row, col) != -1){
+    return;
+  }
+  int line[WINDOW];
+  for (int k = -REACH; k <= REACH; k++){
+    int r = row + k * DR[dir];
+    int c = col + k * DC[dir];
+    if (k == 0){
+      line[k + REACH] = CELL_OWN;
+    } else if (!in_board(b, r, c)){
+      line[k + REACH] = CELL_BLOCKED;
+    } else {
+      int v = board__get_color(b, r, c);
+      line[k + REACH] = (v == -1) ? CELL_EMPTY : (v == color ? CELL_OWN : CELL_BLOCKED);
+    }
+  }
+
+  /* A line that cannot hold five stones is worthless */
+  int lo = REACH, hi = REACH;
+  while (lo > 0 && line[lo - 1] != CELL_BLOCKED){ lo--; }
+  while (hi < WINDOW - 1 && line[hi + 1] != CELL_BLOCKED){ hi++; }
+  if (hi - lo + 1 < 5){
+    return;
+  }
+
+  int first = REACH, last = REACH;
+  while (first > 0 && line[first - 1] == CELL_OWN){ first--; }
+  while (last < WINDOW - 1 && line[last + 1] == CELL_OWN){ last++; }
+  int run = last - first + 1;
+  int open = (first > 0 && line[first - 1] == CELL_EMPTY)
+           + (last < WINDOW - 1 && line[last + 1] == CELL_EMPTY);
+
+  if (run >= 5){ pattern[P_FIVE]++; return; }
+  if (run == 4){ pattern[open == 2 ? P_FOUR_OPEN : P_FOUR_HALF]++; return; }
+
+  /* Four stones with one gap inside a playable five-cell window */
+  for (int s = 0; s <= REACH; s++){
+    int own = 0, blocked = 0;
+    for (int k = s; k < s + 5; k++){
+      if (line[k] == CELL_OWN){ own++; }
+      else if (line[k] == CELL_BLOCKED){ blocked = 1; }
+    }
+    if (!blocked && own == 4){ pattern[P_FOUR_SPACED]++; return; }
+  }
+
+  if (run == 3){ pattern[open == 2 ? P_THREE_OPEN : P_THREE_HALF]++; return; }
+  if (run == 2){ pattern[open == 2 ? P_TWO_OPEN : P_TWO_HALF]++; return; }
+  pattern[P_OTHERS]++;
 }
