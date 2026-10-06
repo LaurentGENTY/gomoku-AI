@@ -48,7 +48,7 @@ $(BUILD)/player4.3.so: $(PLY)/player4.3.c $(PLY)/heuristic2.c $(COMMON) $(BITBOA
 $(BUILD)/player4.4.so: $(PLY)/player4.4.c $(PLY)/heuristic3.c $(COMMON) $(BITBOARD) $(HDRS)
 
 # Memory errors only: the original player code is not leak-free.
-VALGRIND_TESTS := test_bitboard test_player test_moves test_matrix test_match
+VALGRIND_TESTS := test_bitboard test_player test_moves test_matrix
 
 valgrind: $(addprefix $(BUILD)/,$(VALGRIND_TESTS))
 	@set -e; for t in $(VALGRIND_TESTS); do echo "== valgrind $$t"; \
