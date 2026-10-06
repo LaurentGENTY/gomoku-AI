@@ -126,5 +126,5 @@ int main(){
   printf("NOMBRE D'ECHEC : %d\n",total);
   t2 = clock();
   printf("Elapsed time : %lf \n",(double)(t2-t1)/(double)clk_tck);
-  return 0;
+  return total ? EXIT_FAILURE : EXIT_SUCCESS;
 }

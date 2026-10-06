@@ -80,8 +80,9 @@ int test_matrix_list_max(){
 
 
 int main(){
-  print_error(test_matrix_set_get(), "test matrix set get");
-  print_error(test_matrix_get_max(), "test matrix get max");
-  print_error(test_matrix_list_max(), "test matrix list max");
-  return 0;
+  int failures = 0;
+  failures += print_error(test_matrix_set_get(), "test matrix set get");
+  failures += print_error(test_matrix_get_max(), "test matrix get max");
+  failures += print_error(test_matrix_list_max(), "test matrix list max");
+  return failures ? 1 : 0;
 }
