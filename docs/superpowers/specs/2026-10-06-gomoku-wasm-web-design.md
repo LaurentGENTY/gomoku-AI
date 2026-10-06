@@ -72,11 +72,15 @@ Uniquement ce dont les joueurs et les tests ont besoin.
 
 1. **`move.h`** : `struct move_t { size_t row; size_t col; }`, `enum color_t { BLACK = 0, WHITE = 1 }` (le code fait `(color+1)%2`), `struct col_move_t { struct move_t m; enum color_t c; }`.
 2. **`board.h` / `bitboard.h` / `bitboard.c`** : `struct board` avec `__uint128_t* b_w`, `__uint128_t* b_b`, `capacity` (= taille²) et la taille ; bits hors plateau initialisés à 1 (cf. rapport §BitBoard et `test_board__initialize`). Fonctions : `board__initialize`, `board__free`, `board__copy`, `board__add_move`, `board__remove_move`, `board__is_valid_move`, `board__is_full`, `board__won`, `board__select_bit`, `board__get_color`, `board__explore_line`, ainsi que `board__possible_move(s)` si les tests les exigent.
-3. **`board__explore_line(board, i, j, direction, color, pattern[9])`** : pour la case (i, j) et une direction parmi 4, incrémente la catégorie de motif formée si `color` jouait en (i, j). Catégories : `FIVE, FOUR_OPEN, FOUR_HALF, FOUR_SPACED, THREE_OPEN, THREE_HALF, TWO_OPEN, TWO_HALF, OTHERS`. La sémantique exacte (indices de direction, case occupée ou non) est déduite des assertions de `test_explore__line` ; en cas d'ambiguïté, les tests font foi.
-4. **`moves.c/h`, `game.c/h`** : le minimum pour que `test_moves` et `test_game` compilent et passent.
-5. **Hors périmètre :** `server.c`, `players.c` (boucle `dlopen`).
+3. **`board__explore_line(board, i, j, direction, color, pattern[9])`** : pour la case vide (i, j) et une direction parmi 4 (0 = horizontale, 1 = verticale, 2 = diagonale ↘, 3 = anti-diagonale ↙), incrémente **au plus une** catégorie, celle du motif formé si `color` jouait en (i, j). Catégories (indices) : `FIVE=0, FOUR_OPEN, FOUR_HALF, FOUR_SPACED, THREE_OPEN, THREE_HALF, TWO_OPEN, TWO_HALF, OTHERS=8`.
+   - **Mise à jour après exploration :** les ~20 assertions de `test_explore__line` sont vides (elles comparent des pointeurs, `pattern != test`, donc passent toujours) et écrivent hors d'un tableau de 8 cases. Elles ne spécifient rien. La règle ci-dessous est donc définie explicitement, puis validée contre le seul oracle réel, `test_player.c` (valeurs attendues de la matrice d'opportunités et des 12 coups générés), vérifié par un prototype.
+   - Règle, dans une fenêtre de ±4 cases autour de (i, j) : (a) si le segment de cases non bloquées (vides ou à soi) contenant (i, j) fait moins de 5 cases → rien (ligne bloquée, valeur 0) ; (b) soit `run` la longueur du bloc contigu de pierres à soi passant par (i, j), et `open` le nombre de ses extrémités vides (0 à 2) ; (c) `run ≥ 5` → FIVE ; `run = 4` → FOUR_OPEN si `open = 2`, sinon FOUR_HALF ; (d) sinon, s'il existe une fenêtre de 5 cases contenant (i, j), sans case bloquée, avec 4 pierres à soi → FOUR_SPACED ; (e) `run = 3` → THREE_OPEN / THREE_HALF ; `run = 2` → TWO_OPEN / TWO_HALF ; `run = 1` → OTHERS.
+   - Case occupée, hors plateau ou direction invalide → aucun incrément.
+4. **`moves.c/h`** : le minimum pour que `test_moves` passe. **Mise à jour :** `test_game.c` teste un ancien plateau en tableau d'entiers (`game.h`, `board->b[]`), utilisé par aucun joueur et remplacé par le bitboard → ce test est retiré au lieu de reconstruire ce code mort.
+5. Les `main` des tests existants renvoient toujours 0 : ils sont corrigés pour renvoyer un code d'échec. Les assertions vides de `test_explore__line` sont remplacées par de vrais tests, et `test_board__won` (commenté) est réactivé.
+6. **Hors périmètre :** `server.c`, `players.c` (boucle `dlopen`), `game.c/h`.
 
-**Critère de réussite :** `make test` passe en natif sur les 5 suites existantes.
+**Critère de réussite :** `make test` passe en natif sur les 4 suites existantes conservées (`test_bitboard`, `test_moves`, `test_matrix`, `test_player`) plus les nouveaux tests du §7.
 
 ### 5.2 Retouches aux joueurs (seules modifications du C d'origine)
 1. **Threads** (`player4.4.c`) : macro `GOMOKU_NO_THREADS`. Natif = pthreads conservés ; WASM = évaluation séquentielle des coups racine, une seule copie d'heuristique allouée à la fois (créée, évaluée, libérée).
@@ -87,8 +91,9 @@ Uniquement ce dont les joueurs et les tests ont besoin.
 ### 5.3 Adaptateurs `src/wasm/`
 Fonctions `EMSCRIPTEN_KEEPALIVE` à types plats (entiers et pointeurs vers tableaux d'entiers).
 
-- **Arbitre :** `ref_new(size)`, `ref_play(row, col, color)` → `0 invalide | 1 ok | 2 gagné | 3 plein`, `ref_free()`.
-- **Joueur :** `ai_init(size, color, depth)`, `ai_play(n, rows*, cols*, colors*)` → `row * size + col`, `ai_finalize()`. `depth` est ignoré par 4.1.
+- **Arbitre :** `ref_new(size)`, `ref_play(row, col, color)` → `0 invalide | 1 ok | 2 gagné | 3 plein`, `ref_win_count()` / `ref_win_cell(i)` (cases de la ligne gagnante, en `row * size + col`), `ref_free()`.
+- **Joueur :** `ai_init(size, color, depth)`, `ai_push(row, col, color)` (empile un coup à transmettre), `ai_play()` → `row * size + col` (appelle `play()` avec les coups empilés, puis vide la pile), `ai_finalize()`. `depth` est ignoré par 4.1. **Mise à jour :** cette forme push/play remplace le passage de pointeurs, ce qui évite toute gestion du tas WASM côté TS.
+- **Contrat de `play()` (rappel de `player.h`) :** l'IA reçoit tous les coups qu'elle n'a pas encore vus, **y compris son propre dernier coup** (elle ne l'applique pas elle-même).
 - Build : `-sMODULARIZE=1 -sEXPORT_ES6=1`, `-O3`, un `.js` + `.wasm` par module.
 
 ## 6. App web
@@ -122,7 +127,7 @@ IA vs IA : deux Workers, même boucle, délai minimum ~400 ms entre coups.
 
 ## 7. Tests et vérification
 
-1. **C natif** : `make test` (5 suites existantes). Valgrind en CI Linux ; optionnel en local (indisponible sur macOS ARM).
+1. **C natif** : `make test` (4 suites existantes conservées, cf. §5.1). Valgrind en CI Linux ; optionnel en local (indisponible sur macOS ARM).
 2. **Nouveau `test_match` natif** : 4.4 contre un adversaire aléatoire implémenté dans le test lui-même (pas `player1`, pour éviter la collision de symboles du §2.4), sur 10×10, ≥ 9 victoires sur 10.
 3. **Nouveau test d'équivalence** : deux binaires distincts (4.4 avec et sans `GOMOKU_NO_THREADS`) impriment leur coup sur 5 positions fixes ; un script compare les sorties, qui doivent être identiques.
 4. **WASM (Vitest sous Node)** : l'arbitre détecte une victoire en ligne, colonne et deux diagonales ; chaque IA renvoie un coup valide en < 10 s sur une position de milieu de partie.
