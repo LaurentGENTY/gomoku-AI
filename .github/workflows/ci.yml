@@ -46,8 +46,8 @@ jobs:
           npm ci
           npm test
           npx playwright install --with-deps chromium
+          # Builds dist/ and tests it under the Pages sub-path
           npm run e2e
-          npm run build
 
       - uses: actions/upload-pages-artifact@v5
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

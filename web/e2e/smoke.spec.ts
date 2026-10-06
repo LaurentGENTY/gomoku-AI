@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('a human move gets an AI answer', async ({ page }) => {
-  await page.goto('/?mode=human&color=black&a=easy');
+  await page.goto('./?mode=human&color=black&a=easy');
   await page.waitForFunction(() => window.__gomoku?.state().phase === 'humanTurn');
   const point = await page.evaluate(() => window.__gomoku!.cellCenter({ row: 4, col: 4 }));
   await page.mouse.click(point.x, point.y);
