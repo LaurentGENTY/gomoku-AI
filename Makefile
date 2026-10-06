@@ -14,7 +14,7 @@ COMMON   := $(PLY)/matrix.c $(PLY)/list.c
 
 TESTS := test_bitboard test_player test_moves test_matrix test_match
 
-.PHONY: all test test-equiv players valgrind clean doc
+.PHONY: all test test-equiv players valgrind wasm clean doc
 
 all: test players
 
@@ -82,3 +82,20 @@ doc:
 
 clean:
 	rm -rf $(BUILD) doc/doxygen/html
+
+EMCC     ?= emcc
+WASM_OUT := web/src/wasm/generated
+EMFLAGS  := -O3 -std=c99 -Wall -sMODULARIZE=1 -sEXPORT_ES6=1 \
+            -sENVIRONMENT=web,worker,node -sALLOW_MEMORY_GROWTH=1 \
+            -sSTACK_SIZE=1048576 -sFILESYSTEM=0
+
+wasm: $(WASM_OUT)/referee.js $(WASM_OUT)/player41.js $(WASM_OUT)/player44.js
+
+$(WASM_OUT)/referee.js: src/wasm/referee_api.c $(BITBOARD) $(HDRS)
+	$(EMCC) $(EMFLAGS) $(filter %.c,$^) -o $@
+
+$(WASM_OUT)/player41.js: src/wasm/player_api.c $(PLY)/player4.c $(PLY)/heuristic0.c $(COMMON) $(HDRS)
+	$(EMCC) $(EMFLAGS) $(filter %.c,$^) -o $@
+
+$(WASM_OUT)/player44.js: src/wasm/player_api.c $(PLAYER44) $(HDRS)
+	$(EMCC) $(EMFLAGS) -DGOMOKU_NO_THREADS -DPLAYER_HAS_DEPTH $(filter %.c,$^) -o $@
