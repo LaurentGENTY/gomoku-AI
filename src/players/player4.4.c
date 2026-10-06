@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#ifndef GOMOKU_NO_THREADS
 #include <pthread.h>
+#endif
 
 #include "player.h"
 #include "../server/move.h"
@@ -36,6 +38,13 @@ struct player{
 
 /* Struct for containing data by the player */
 struct player self;
+
+/* Upper bound on the search depth; the web build lowers it for easier levels */
+static int max_depth = 4;
+
+void set_max_depth(int depth){
+  if (depth > 0){ max_depth = depth; }
+}
 
 /**
  * @brief Informations for a thread
@@ -153,6 +162,7 @@ struct move_t play(struct col_move_t const previous_moves[], size_t n_moves){
   self.h->nb_childs = 6;
   if (self.nb_moves < 20){ self.h->depth = 4; self.h->nb_childs = 8; }
   if (self.nb_moves < 6){ self.h->depth = 4; self.h->nb_childs = 10; }
+  if (self.h->depth > max_depth){ self.h->depth = max_depth; }
 
   long clk_tck = CLOCKS_PER_SEC;
   clock_t t1, t2;
@@ -173,10 +183,31 @@ struct move_t play(struct col_move_t const previous_moves[], size_t n_moves){
     return m;
   }
 
+  int length = self.h->cursor-first_cursor;
+#ifdef GOMOKU_NO_THREADS
+  // WebAssembly build: GitHub Pages cannot serve the COOP/COEP headers that
+  // wasm threads need, so the root moves are evaluated one after the other,
+  // in the same order as the threaded version, keeping one heuristic copy alive.
+  for (int i = 0; i < length; i++){
+    struct data d;
+    d.mv = pop(self.h);
+    d.step = 0;
+    d.cp = heuristic_copy(self.h);
+    thread_evaluation(&d);
+    if (d.step > better_move){
+      better_move = d.step;
+      next_mv = d.mv;
+    }
+    nb_nodes += d.cp->nb_node_explored;
+    heuristic_free(d.cp);
+  }
+  t2 = clock();
+  printf("%d noeuds en %lf secondes\n", nb_nodes, (double)(t2-t1)/(double)clk_tck);
+  return next_mv;
+#else
   // multithreading
   // we need to make a copy of the heuristic because its value will be modified
   // during recursion
-  int length = self.h->cursor-first_cursor;
   pthread_t * threads = malloc(sizeof(pthread_t)*length);
   struct data * dati = malloc(sizeof(struct data)*length);
   for (int i = 0; i < length; i++){
@@ -203,6 +234,7 @@ struct move_t play(struct col_move_t const previous_moves[], size_t n_moves){
   free(threads);
   free(dati);
   return next_mv;
+#endif
 }
 
 void finalize(){

@@ -1,0 +1,24 @@
+# Native build
+build/
+build_Debug/
+install/
+gmon.out
+/test_*
+
+# Docs build
+doc/doxygen/html/
+doc/*.aux
+doc/*.log
+doc/*.toc
+doc/*.lof
+
+# Web
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+web/src/wasm/generated/*
+!web/src/wasm/generated/*.d.ts
+
+# Raw recordings (converted GIF/MP4 live in docs/media/)
+docs/media/raw/

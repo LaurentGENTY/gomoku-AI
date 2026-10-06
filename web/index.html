@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gomoku AI</title>
+    <meta name="description" content="Play Gomoku against a minimax AI written in C and compiled to WebAssembly." />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Gomoku AI</h1>
+        <p class="tagline">A C school project — bitboard, minimax, alpha-beta — compiled to WebAssembly.</p>
+      </header>
+
+      <section id="controls" class="controls" aria-label="Game settings">
+        <label>Mode
+          <select id="mode">
+            <option value="human">Human vs AI</option>
+            <option value="aivsai">AI vs AI</option>
+          </select>
+        </label>
+        <label data-mode="human">You play
+          <select id="human-color">
+            <option value="black">Black (first)</option>
+            <option value="white">White</option>
+          </select>
+        </label>
+        <label><span id="level-a-label">AI level</span>
+          <select id="level-a">
+            <option value="easy">Easy — player 4.1</option>
+            <option value="medium">Medium — player 4.4, depth 2</option>
+            <option value="hard">Hard — player 4.4, depth 4</option>
+          </select>
+        </label>
+        <label data-mode="aivsai">White AI
+          <select id="level-b">
+            <option value="easy">Easy — player 4.1</option>
+            <option value="medium">Medium — player 4.4, depth 2</option>
+            <option value="hard">Hard — player 4.4, depth 4</option>
+          </select>
+        </label>
+        <button id="new-game" type="button">New game</button>
+      </section>
+
+      <section id="board-area">
+        <canvas id="board" aria-label="Gomoku board, 10 by 10"></canvas>
+        <p id="status" role="status" aria-live="polite"></p>
+        <p id="timing"></p>
+      </section>
+
+      <section class="how">
+        <h2>How it works</h2>
+        <p><strong>Bitboard.</strong> Each player's stones live in one 128-bit integer, one bit per cell — which is why boards stop at 11×11. Checking a win or a full board is a handful of bitwise operations.</p>
+        <p><strong>Minimax with alpha-beta.</strong> The AI looks a few moves ahead (negamax), assumes you always answer with your best move, and prunes branches that cannot change its choice.</p>
+        <p><strong>Crossing-lines heuristic.</strong> Every empty cell gets a score from 0 to 13 from the lines it would create — open fours, double open threes… Crossings score highest because that is how games are won. Only the best cells are searched.</p>
+        <p><strong>In your browser.</strong> The original C code is compiled with Emscripten into three WebAssembly modules — the rules and two AI players. Each AI runs in its own Web Worker, so the page never freezes.</p>
+        <p><a href="https://github.com/LaurentGENTY/gomoku-AI">Source code</a> · <a href="https://github.com/LaurentGENTY/gomoku-AI/blob/master/doc/rapport.pdf">Project report (French)</a></p>
+      </section>
+
+      <footer>ENSEIRB-MATMECA semester 6 project — Emeric Duchemin, Laurent Genty, Julien Miens, Tanguy Pemeja.</footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

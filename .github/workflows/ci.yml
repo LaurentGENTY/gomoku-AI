@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Native tests
+        run: make test players
+
+      - name: Valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+          make valgrind
+
+      - uses: mymindstorm/setup-emsdk@v16
+        with:
+          version: latest
+
+      - name: WebAssembly build
+        run: make wasm
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Web tests and build
+        working-directory: web
+        run: |
+          npm ci
+          npm test
+          npx playwright install --with-deps chromium
+          # Builds dist/ and tests it under the Pages sub-path
+          npm run e2e
+
+      - uses: actions/upload-pages-artifact@v5
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          path: web/dist
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

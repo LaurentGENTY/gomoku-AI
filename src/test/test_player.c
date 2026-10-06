@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "time.h"
+#include <stdlib.h>
 #include "../players/heuristic2.h"
 #include "../players/player.h"
 
@@ -118,11 +119,12 @@ int main(){
   long clk_tck = CLOCKS_PER_SEC;
   clock_t t1, t2;
   t1 = clock();
-  print_error(test_explore_lines(), "test evaluate_point");
-  print_error(test_generating_moves(), "test generating_moves");
-  print_error(test_heuristic_full(), "test heuristic_full");
+  int failures = 0;
+  failures += print_error(test_explore_lines(), "test evaluate_point");
+  failures += print_error(test_generating_moves(), "test generating_moves");
+  failures += print_error(test_heuristic_full(), "test heuristic_full");
   t2 = clock();
   printf("Elapsed time : %lf \n",(double)(t2-t1)/(double)clk_tck);
   heuristic_value();
-  return 0;
+  return failures ? EXIT_FAILURE : EXIT_SUCCESS;
 }
