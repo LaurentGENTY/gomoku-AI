@@ -390,5 +390,5 @@ int main(int argc,char* argv[]){
   TEST("board__explore_line",test_explore__line(act),1);
   END_TEST("*",1);
   // printf("Bravo !\nTu as mis %f secondes a trouver le nombre.\n", (double) temps/CLOCKS_PER_SEC);
-  return 0;
+  return (res == tot) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
