@@ -12,9 +12,9 @@ HDRS     := $(wildcard $(SRV)/*.h $(PLY)/*.h)
 BITBOARD := $(SRV)/bitboard.c
 COMMON   := $(PLY)/matrix.c $(PLY)/list.c
 
-TESTS := test_bitboard test_player test_moves test_matrix
+TESTS := test_bitboard test_player test_moves test_matrix test_match
 
-.PHONY: all test players valgrind clean doc
+.PHONY: all test test-equiv players valgrind clean doc
 
 all: test players
 
@@ -48,13 +48,33 @@ $(BUILD)/player4.3.so: $(PLY)/player4.3.c $(PLY)/heuristic2.c $(COMMON) $(BITBOA
 $(BUILD)/player4.4.so: $(PLY)/player4.4.c $(PLY)/heuristic3.c $(COMMON) $(BITBOARD) $(HDRS)
 
 # Memory errors only: the original player code is not leak-free.
-VALGRIND_TESTS := test_bitboard test_player test_moves test_matrix
+VALGRIND_TESTS := test_bitboard test_player test_moves test_matrix test_match
 
 valgrind: $(addprefix $(BUILD)/,$(VALGRIND_TESTS))
 	@set -e; for t in $(VALGRIND_TESTS); do echo "== valgrind $$t"; \
 	  valgrind --quiet --error-exitcode=1 --errors-for-leak-kinds=none ./$(BUILD)/$$t > /dev/null; done
 
-test: $(addprefix $(BUILD)/,$(TESTS))
+PLAYER44 := $(PLY)/player4.4.c $(PLY)/heuristic3.c $(COMMON) $(BITBOARD)
+
+$(BUILD)/test_match: $(TST)/test_match.c $(PLAYER44) $(HDRS) | $(BUILD)
+	$(CC) $(CFLAGS) -pthread $(filter %.c,$^) -o $@ $(LDLIBS)
+
+$(BUILD)/equiv_threads: $(TST)/test_equiv.c $(PLAYER44) $(HDRS) | $(BUILD)
+	$(CC) $(CFLAGS) -pthread $(filter %.c,$^) -o $@ $(LDLIBS)
+
+# pthreads live in libc on macOS and recent glibc: renaming pthread_create
+# turns any leftover thread use in the sequential build into a link error.
+$(BUILD)/equiv_seq: $(TST)/test_equiv.c $(PLAYER44) $(HDRS) | $(BUILD)
+	$(CC) $(CFLAGS) -DGOMOKU_NO_THREADS -Dpthread_create=gomoku_threads_forbidden $(filter %.c,$^) -o $@ $(LDLIBS)
+
+# The WebAssembly build has no threads: both builds must pick the same moves.
+test-equiv: $(BUILD)/equiv_threads $(BUILD)/equiv_seq
+	./$(BUILD)/equiv_threads | grep '^MOVE' > $(BUILD)/equiv_threads.txt
+	./$(BUILD)/equiv_seq | grep '^MOVE' > $(BUILD)/equiv_seq.txt
+	diff $(BUILD)/equiv_threads.txt $(BUILD)/equiv_seq.txt
+	@echo "threaded and sequential 4.4 agree"
+
+test: $(addprefix $(BUILD)/,$(TESTS)) test-equiv
 	@set -e; for t in $(TESTS); do echo "== $$t"; ./$(BUILD)/$$t; done
 
 doc:
